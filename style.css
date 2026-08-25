@@ -274,6 +274,14 @@ img { max-width: 100%; display: block; }
   font-size: 0.8rem;
   margin-top: 20px;
 }
+.latest-placeholder {
+  padding: 16px 0;
+  color: var(--text-dim);
+  font-size: 0.9rem;
+}
+.latest-placeholder a {
+  color: var(--accent-bright);
+}
 
 /* Profile */
 .profile-inner {
