@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://nao-bookshelf.sn08011203y.workers.dev/sitemap.xml
