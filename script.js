@@ -41,6 +41,18 @@ async function loadLatest() {
     items.slice(0, 10).forEach((item) => {
       const li = document.createElement("li");
 
+      if (item.thumbnail && !item.r18) {
+        const img = document.createElement("img");
+        img.className = "latest-thumb";
+        img.src = item.thumbnail;
+        img.alt = "";
+        img.loading = "lazy";
+        li.appendChild(img);
+      }
+
+      const body = document.createElement("div");
+      body.className = "latest-body";
+
       const dateSpan = document.createElement("span");
       dateSpan.className = "latest-date";
       dateSpan.textContent = formatDate(item.pubDate);
@@ -58,8 +70,9 @@ async function loadLatest() {
         a.appendChild(mark);
       }
 
-      li.appendChild(dateSpan);
-      li.appendChild(a);
+      body.appendChild(dateSpan);
+      body.appendChild(a);
+      li.appendChild(body);
       list.appendChild(li);
     });
 
