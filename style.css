@@ -397,6 +397,155 @@ img { max-width: 100%; display: block; }
 }
 .footer-inner a { color: var(--text-dim); }
 
+
+/* Flagship (代表作) */
+.flagship {
+  background:
+    radial-gradient(ellipse at 85% 0%, rgba(139, 30, 63, 0.20), transparent 55%),
+    var(--bg);
+  border-bottom: 1px solid var(--border);
+}
+.flagship-label {
+  color: var(--gold);
+  letter-spacing: 0.24em;
+  font-size: 0.78rem;
+  margin: 0 0 28px;
+}
+.flagship-inner {
+  display: grid;
+  grid-template-columns: minmax(0, 420px) minmax(0, 1fr);
+  gap: 44px;
+  align-items: start;
+}
+.flagship-visual img {
+  width: 100%;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+}
+.flagship-body h2 {
+  font-family: var(--serif);
+  font-size: clamp(2rem, 4vw, 2.8rem);
+  margin: 0 0 18px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+}
+.flagship-catch {
+  font-family: var(--serif);
+  color: var(--gold);
+  font-size: 1.06rem;
+  line-height: 1.9;
+  margin: 0 0 26px;
+}
+.flagship-desc {
+  color: var(--text-dim);
+  font-size: 0.95rem;
+  margin: 0 0 16px;
+}
+.flagship-meta {
+  font-size: 0.82rem;
+  color: var(--text-dim);
+  margin: 22px 0 20px;
+  padding-top: 18px;
+  border-top: 1px solid var(--border);
+}
+.flagship-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.site-link {
+  display: inline-block;
+  padding: 9px 18px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--text);
+  text-decoration: none;
+  font-size: 0.86rem;
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
+}
+.site-link:hover {
+  border-color: var(--accent-bright);
+  color: var(--accent-bright);
+  background: rgba(196, 65, 106, 0.08);
+}
+.flagship-note {
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  margin: 18px 0 0;
+}
+
+/* Shorts (短編) */
+.shorts { background: var(--bg-alt); border-bottom: 1px solid var(--border); }
+
+@media (max-width: 860px) {
+  .flagship-inner { grid-template-columns: 1fr; gap: 28px; }
+}
+
+
+/* 成人向けの入口（一般向けトップ） */
+.adult-entry {
+  margin-top: 40px;
+  padding: 24px 26px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: rgba(139, 30, 63, 0.07);
+  max-width: 620px;
+}
+.adult-entry-label {
+  color: var(--accent-bright);
+  font-size: 0.78rem;
+  letter-spacing: 0.14em;
+  margin: 0 0 10px;
+}
+.adult-entry-text {
+  color: var(--text-dim);
+  font-size: 0.88rem;
+  margin: 0 0 16px;
+}
+.adult-entry-link {
+  color: var(--accent-bright);
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-decoration: none;
+  border-bottom: 1px solid var(--accent-bright);
+  padding-bottom: 2px;
+}
+.adult-entry-link:hover { color: var(--text); border-color: var(--text); }
+
+/* 成人向けページ */
+.adult-gate { padding-bottom: 0; }
+.adult-badge {
+  display: inline-block;
+  color: var(--accent-bright);
+  border: 1px solid var(--accent-bright);
+  border-radius: 999px;
+  padding: 5px 14px;
+  font-size: 0.76rem;
+  letter-spacing: 0.12em;
+  margin: 0 0 20px;
+}
+.adult-title {
+  font-family: var(--serif);
+  font-size: clamp(1.5rem, 3.4vw, 2.2rem);
+  margin: 0 0 18px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+.adult-lead { color: var(--text-dim); margin: 0; max-width: 620px; }
+.adult-lead a { color: var(--accent-bright); }
+
+
+.work-soon {
+  display: inline-block;
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--gold);
+  border: 1px dashed var(--gold);
+  border-radius: 8px;
+  padding: 7px 14px;
+  width: fit-content;
+}
+
 /* Responsive */
 @media (max-width: 760px) {
   .site-nav {

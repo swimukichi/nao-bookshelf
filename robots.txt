@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
+Disallow: /r18.html
 
 Sitemap: https://nao-bookshelf.sn08011203y.workers.dev/sitemap.xml
