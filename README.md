@@ -36,9 +36,9 @@ python3 -m http.server 8000
 - 作品カードを追加・変更したい → `#works` セクションの `.work-card` をコピーして編集
 - R18作品は `tag-r18` クラスのバッジと注意書きを付けて掲載しています。表現方法を変えたい場合はそのカード内の文章を調整してください
 
-## 小説の投稿キット
+## note → 他サイト 自動転載
 
-原稿から note・カクヨム・なろう・エブリスタ用の本文とSNS告知文を自動生成します。使い方は [`publisher/README.md`](publisher/README.md) を参照してください。
+note に公開された小説を、カクヨム・なろう・エブリスタへ自動で投稿します。使い方は [`publisher/README.md`](publisher/README.md) を参照してください。
 
 ## 注意
 

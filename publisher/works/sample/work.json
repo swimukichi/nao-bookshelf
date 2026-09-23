@@ -18,7 +18,6 @@
     "shortstory"
   ],
   "platforms": [
-    "note",
     "kakuyomu",
     "narou",
     "estar"
@@ -33,7 +32,6 @@
   "post_urls": {
     "kakuyomu": "",
     "narou": "",
-    "estar": "",
-    "note": ""
+    "estar": ""
   }
 }

@@ -1,15 +1,20 @@
 #!/usr/bin/env python3
-"""投稿キットの原稿を、各サイトの「予約投稿」機能を使って自動で予約する。
+"""note に公開済みの話を、カクヨム・なろう・エブリスタへ自動で投稿/予約する。
+
+note への投稿は PC 側の仕組みが担当するため、ここでは note には一切触らない。
+原稿は scripts/sync_from_note.py が note から取り込んだものを使う。
+publish_at が未来なら各サイトの予約機能で予約し、過ぎていればすぐ公開する。
 
 GitHub Actions から実行する。ログインは保存済みのログイン状態(Cookie)を
 Secrets から読み込んで行う(パスワードは使わない)。
 
 モード:
   probe    投稿画面を開いて、入力欄やボタンの一覧をログに出す(画面の調査用・何も入力しない)
-  dry-run  入力と日時設定まで行い、最後の「予約」ボタンは押さない(スクリーンショットを保存)
-  post     予約まで実行し、publisher/state.json に記録する
+  dry-run  入力と日時設定まで行い、最後のボタンは押さない(スクリーンショットを保存)
+  post     投稿/予約まで実行し、publisher/state.json に記録する
 
-予約済みの話は state.json に記録され、二重に予約されることはない。
+投稿済みの話は state.json に記録され、二重に投稿されることはない。
+同じ作品・同じサイトで1話失敗したら、話の順番が狂わないよう以降の話は次回に回す。
 """
 import argparse
 import base64
@@ -28,7 +33,7 @@ PUBLISHER_DIR = kit.PUBLISHER_DIR
 STATE_PATH = PUBLISHER_DIR / "state.json"
 SELECTORS_PATH = PUBLISHER_DIR / "poster" / "selectors.json"
 ARTIFACT_DIR = PUBLISHER_DIR / "poster" / "artifacts"
-PLATFORMS = ["kakuyomu", "narou", "estar", "note"]
+PLATFORMS = ["kakuyomu", "narou", "estar"]
 SECRET_NAMES = {p: f"{p.upper()}_STORAGE_STATE" for p in PLATFORMS}
 
 
@@ -91,8 +96,6 @@ def post_url(platform: str, work: dict, selectors: dict) -> str:
     urls = work.get("post_urls", {})
     if urls.get(platform):
         return urls[platform]
-    if platform == "note":
-        return selectors["note"]["new_url"]
     if platform == "kakuyomu":
         m = re.search(r"kakuyomu\.jp/works/(\d+)", work.get("links", {}).get("kakuyomu", ""))
         if m:
@@ -131,8 +134,6 @@ def collect_jobs(config: dict, selectors: dict, state: dict, only_platform: str,
                 reason = None
                 if not when:
                     reason = "publish_at がない/読めない"
-                elif mode == "post" and when < now + timedelta(minutes=margin):
-                    reason = f"公開予定が近すぎる/過ぎている({when:%m/%d %H:%M})"
                 elif mode == "post" and when > now + timedelta(days=window):
                     reason = f"まだ先({window}日以内になったら予約)"
                 elif not post_url(platform, work, selectors):
@@ -141,7 +142,9 @@ def collect_jobs(config: dict, selectors: dict, state: dict, only_platform: str,
                     skipped.append((key, platform, reason))
                     continue
                 jobs.append({"key": key, "work": work, "ep": ep, "platform": platform,
-                             "when": when, "url": post_url(platform, work, selectors)})
+                             "when": when, "url": post_url(platform, work, selectors),
+                             # 公開予定が過ぎている/直前なら、予約せずにすぐ公開する
+                             "immediate": when < now + timedelta(minutes=margin)})
     return jobs, skipped
 
 
@@ -206,31 +209,6 @@ def set_datetime(page, sel: dict, when: datetime) -> str:
     raise NotFound("予約日時の入力欄が見つからない")
 
 
-def paste_html(page, target, html: str, text: str):
-    """リッチエディタ(note)に貼り付けとして本文を入れる。"""
-    target.click()
-    target.evaluate(
-        """(el, [html, text]) => {
-            el.focus();
-            const dt = new DataTransfer();
-            dt.setData('text/html', html);
-            dt.setData('text/plain', text);
-            el.dispatchEvent(new ClipboardEvent('paste', {clipboardData: dt, bubbles: true, cancelable: true}));
-        }""",
-        [html, text],
-    )
-
-
-def note_html(text: str) -> str:
-    import html as h
-    out = []
-    for block in re.split(r"\n{2,}", text.strip()):
-        lines = [h.escape(line) for line in block.split("\n")]
-        lines = [re.sub(r"\*\*(.+?)\*\*", r"<b>\1</b>", line) for line in lines]
-        out.append("<p>" + "<br>".join(lines) + "</p>")
-    return "".join(out)
-
-
 def dump_form(page, label: str):
     """probe 用: 画面の入力欄・ボタンをログに出す。"""
     items = page.evaluate(
@@ -276,17 +254,22 @@ def run_form_site(page, job, sel, mode, title, body):
 
     first(page, sel["title"]).fill(title)
     first(page, sel["body"]).fill(body)
-    toggle = first(page, sel.get("reserve_toggle"), timeout=3000, required=False)
-    if toggle:
-        toggle.click()
-    method = set_datetime(page, sel, job["when"])
-    print(f"  日時入力: {method}")
+    if job["immediate"]:
+        print("  公開予定を過ぎているため、すぐ公開する")
+        submit = sel.get("submit_now") or sel["submit"]
+    else:
+        toggle = first(page, sel.get("reserve_toggle"), timeout=3000, required=False)
+        if toggle:
+            toggle.click()
+        method = set_datetime(page, sel, job["when"])
+        print(f"  日時入力: {method}")
+        submit = sel["submit"]
     shot(page, f"{mode}_{job['platform']}_{job['key']}")
     if mode == "dry-run":
         return "dry-run", page.url
 
     page.on("dialog", lambda d: d.accept())
-    first(page, sel["submit"]).click()
+    first(page, submit).click()
     page.wait_for_load_state("domcontentloaded")
     confirm = first(page, sel.get("confirm"), timeout=3000, required=False)
     if confirm:
@@ -300,55 +283,9 @@ def run_form_site(page, job, sel, mode, title, body):
     return "scheduled", page.url.split("?")[0]
 
 
-def run_note(page, job, sel, mode, title, body, tags):
-    page.goto(job["url"], wait_until="domcontentloaded")
-    ensure_logged_in(page)
-    page.wait_for_timeout(3000)
-    if mode == "probe":
-        dump_form(page, f"note editor {job['key']}")
-        shot(page, f"probe_note_{job['key']}")
-        opener = first(page, sel.get("open_publish"), timeout=3000, required=False)
-        if opener and opener.is_enabled():
-            opener.click()
-            page.wait_for_timeout(2500)
-            dump_form(page, f"note publish settings {job['key']}")
-            shot(page, f"probe_note_settings_{job['key']}")
-        return "probed", page.url
-
-    first(page, sel["title"]).fill(title)
-    paste_html(page, first(page, sel["body"]), note_html(body), body)
-    page.wait_for_timeout(1500)
-    first(page, sel["open_publish"]).click()
-    page.wait_for_timeout(2500)
-    tag_input = first(page, sel.get("hashtag_input"), timeout=2000, required=False)
-    if tag_input:
-        for tag in tags[:10]:
-            tag_input.fill(tag)
-            tag_input.press("Enter")
-    toggle = first(page, sel.get("reserve_toggle"), timeout=3000, required=False)
-    if toggle:
-        toggle.click()
-    method = set_datetime(page, sel, job["when"])
-    print(f"  日時入力: {method}")
-    shot(page, f"{mode}_note_{job['key']}")
-    if mode == "dry-run":
-        return "dry-run", page.url
-
-    first(page, sel["submit"]).click()
-    confirm = first(page, sel.get("confirm"), timeout=3000, required=False)
-    if confirm:
-        confirm.click()
-    page.wait_for_timeout(4000)
-    shot(page, f"done_note_{job['key']}")
-    if not any(t in page.content() for t in sel.get("success_text", [])):
-        raise NotFound("予約完了の表示を確認できなかった(スクリーンショットを確認してください)")
-    return "scheduled", page.url.split("?")[0]
-
-
 def kit_text(job, platform):
     out = kit.OUTPUT_DIR / job["key"]
-    name = "note.md" if platform == "note" else f"{platform}.txt"
-    path = out / name
+    path = out / f"{platform}.txt"
     if not path.exists():
         raise NotFound(f"{path} がない(先に build_publish_kit.py を実行)")
     return path.read_text(encoding="utf-8")
@@ -357,8 +294,9 @@ def kit_text(job, platform):
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--mode", choices=["probe", "dry-run", "post"], default="post")
-    parser.add_argument("--platform", default="", help="kakuyomu / narou / estar / note(空なら全部)")
+    parser.add_argument("--platform", default="", help="kakuyomu / narou / estar(空なら全部)")
     parser.add_argument("--target", default="", help="作品フォルダ名 または 作品/話(例: sample/01)")
+    parser.add_argument("--check", action="store_true", help="対象があるかだけ調べる(GitHub Actions 用)")
     args = parser.parse_args()
 
     config = kit.load_json(kit.CONFIG_PATH, {})
@@ -368,6 +306,13 @@ def main() -> int:
     jobs, skipped = collect_jobs(config, selectors, state, args.platform, args.target, args.mode)
     for key, platform, reason in skipped:
         print(f"[skip] {key} {platform}: {reason}")
+    if args.check:
+        print(f"[auto_post] 対象 {len(jobs)} 件")
+        output = os.environ.get("GITHUB_OUTPUT")
+        if output:
+            with open(output, "a", encoding="utf-8") as f:
+                f.write(f"jobs={len(jobs)}\n")
+        return 0
     if not jobs:
         print("[auto_post] 予約する話はありません")
         write_summary([], skipped)
@@ -389,24 +334,25 @@ def main() -> int:
                 continue
             context = browser.new_context(storage_state=storage, locale="ja-JP",
                                           timezone_id="Asia/Tokyo", viewport={"width": 1280, "height": 900})
+            failed = set()
             for job in pjobs:
+                chain = job["key"].split("/")[0]
+                if chain in failed:
+                    results.append((job, "error", "前の話が失敗したため次回に回す"))
+                    continue
                 page = context.new_page()
                 page.set_default_timeout(20000)
                 print(f"[auto_post] {args.mode} {platform} {job['key']} → {job['when']:%Y-%m-%d %H:%M}")
                 try:
                     work, ep = job["work"], job["ep"]
                     body = kit_text(job, platform)
-                    if platform == "note":
-                        tags = work.get("tags", []) + config.get("sns", {}).get("default_tags", [])
-                        status, url = run_note(page, job, selectors["note"], args.mode,
-                                               kit.full_title(work, ep), body, tags)
-                    else:
-                        status, url = run_form_site(page, job, selectors[platform], args.mode,
-                                                    kit.episode_label(work, ep), body)
+                    status, url = run_form_site(page, job, selectors[platform], args.mode,
+                                                kit.episode_label(work, ep), body)
                     results.append((job, status, url))
                     if status == "scheduled":
                         state.setdefault(job["key"], {})[platform] = {
                             "status": "scheduled",
+                            "published_now": job["immediate"],
                             "publish_at": job["when"].strftime("%Y-%m-%d %H:%M"),
                             "scheduled_at": datetime.now(JST).strftime("%Y-%m-%d %H:%M"),
                             "url": url,
@@ -414,6 +360,7 @@ def main() -> int:
                         STATE_PATH.write_text(json.dumps(state, ensure_ascii=False, indent=2) + "\n",
                                               encoding="utf-8")
                 except Exception as exc:  # noqa: BLE001 - 1件の失敗で全体を止めない
+                    failed.add(chain)
                     shot(page, f"error_{platform}_{job['key']}")
                     results.append((job, "error", str(exc).splitlines()[0][:200]))
                     print(f"  ✗ {exc}", file=sys.stderr)
@@ -428,7 +375,7 @@ def main() -> int:
 
 def write_summary(results, skipped):
     lines = ["## 自動予約の結果", "", "| 話 | 投稿先 | 公開予定 | 結果 | 詳細 |", "|---|---|---|---|---|"]
-    icons = {"scheduled": "✅ 予約済", "dry-run": "🟡 入力のみ", "probed": "🔍 調査", "error": "❌ 失敗"}
+    icons = {"scheduled": "✅ 投稿/予約済", "dry-run": "🟡 入力のみ", "probed": "🔍 調査", "error": "❌ 失敗"}
     for job, status, detail in results:
         lines.append(f"| {job['key']} | {kit.PLATFORM_LABELS[job['platform']]} | "
                      f"{job['when']:%m/%d %H:%M} | {icons.get(status, status)} | {detail} |")

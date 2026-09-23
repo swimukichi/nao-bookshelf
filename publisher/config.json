@@ -1,7 +1,8 @@
 {
   "note": {
     "magazine_url": "https://note.com/swi0801/m/me98fd692c5c2",
-    "cta": "スキ・フォローしてもらえると、次の話を書く力になります。"
+    "cta": "スキ・フォローしてもらえると、次の話を書く力になります。",
+    "user": "swi0801"
   },
   "sns": {
     "default_tags": [
@@ -18,6 +19,7 @@
   },
   "auto_post": {
     "window_days": 30,
-    "min_lead_minutes": 15
+    "min_lead_minutes": 15,
+    "repost_delay_hours": 0
   }
 }

@@ -1,25 +1,28 @@
-name: Auto schedule novel posts
+name: Repost note episodes to other sites
+
+# note に公開された話を取り込み、カクヨム・なろう・エブリスタへ投稿/予約する。
+# note への投稿は PC 側の仕組みが担当するため、ここでは note に書き込まない。
 
 on:
+  schedule:
+    - cron: "10 * * * *"
   push:
     branches: [main]
     paths:
       - "publisher/works/**"
-  schedule:
-    - cron: "30 */6 * * *"
   workflow_dispatch:
     inputs:
       mode:
-        description: "probe=画面を調べる / dry-run=入力のみ / post=予約まで実行"
+        description: "probe=画面を調べる / dry-run=入力のみ / post=投稿・予約まで実行"
         type: choice
         options: [probe, dry-run, post]
         default: probe
       platform:
-        description: "kakuyomu / narou / estar / note(空なら全部)"
+        description: "kakuyomu / narou / estar(空なら全部)"
         required: false
         default: ""
       target:
-        description: "作品フォルダ名 または 作品/話(例: sample/01)。空なら全部"
+        description: "作品フォルダ名 または 作品/話(例: meibo/10)。空なら全部"
         required: false
         default: ""
 
@@ -31,7 +34,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  post:
+  repost:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -42,20 +45,32 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install Playwright
-        run: |
-          pip install playwright==1.47.0
-          python -m playwright install --with-deps chromium
+      - name: Import published episodes from note
+        run: python3 scripts/sync_from_note.py
 
       - name: Build publish kit
         run: python3 scripts/build_publish_kit.py
 
-      - name: Schedule posts
+      - name: Check for episodes to post
+        id: check
+        run: |
+          python3 scripts/auto_post.py --check \
+            --mode "${{ github.event.inputs.mode || 'post' }}" \
+            --platform "${{ github.event.inputs.platform }}" \
+            --target "${{ github.event.inputs.target }}"
+
+      - name: Install Playwright
+        if: steps.check.outputs.jobs != '0'
+        run: |
+          pip install playwright==1.47.0
+          python -m playwright install --with-deps chromium
+
+      - name: Post / schedule to other sites
+        if: steps.check.outputs.jobs != '0'
         env:
           KAKUYOMU_STORAGE_STATE: ${{ secrets.KAKUYOMU_STORAGE_STATE }}
           NAROU_STORAGE_STATE: ${{ secrets.NAROU_STORAGE_STATE }}
           ESTAR_STORAGE_STATE: ${{ secrets.ESTAR_STORAGE_STATE }}
-          NOTE_STORAGE_STATE: ${{ secrets.NOTE_STORAGE_STATE }}
         run: |
           python3 scripts/auto_post.py \
             --mode "${{ github.event.inputs.mode || 'post' }}" \
@@ -71,15 +86,15 @@ jobs:
           if-no-files-found: ignore
           retention-days: 7
 
-      - name: Commit state
+      - name: Commit imported episodes and state
         if: always()
         run: |
-          if [ -z "$(git status --porcelain -- publisher/state.json)" ]; then
+          if [ -z "$(git status --porcelain -- publisher)" ]; then
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add publisher/state.json
-          git commit -m "chore: record scheduled posts"
+          git add publisher/works publisher/output publisher/state.json
+          git commit -m "chore: import note episodes and record reposts"
           git pull --rebase origin main
           git push

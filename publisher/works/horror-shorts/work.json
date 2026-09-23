@@ -1,0 +1,33 @@
+{
+  "status": "連載中",
+  "r18": false,
+  "indent": true,
+  "platforms": [
+    "estar"
+  ],
+  "auto_post": [],
+  "links": {
+    "note_magazine": "https://note.com/swi0801/m/me98fd692c5c2",
+    "estar": "https://estar.jp/novels/26606274"
+  },
+  "post_urls": {
+    "estar": ""
+  },
+  "title": "わたしは正しかった",
+  "title_prefix": "",
+  "genre_label": "短編ホラー集",
+  "catch": "正しい手順を踏んだ。前提だけが違っていた。",
+  "episode_unit": "第{n}話",
+  "tags": [
+    "ホラー",
+    "短編小説"
+  ],
+  "tags_en": [
+    "horror",
+    "shortstory"
+  ],
+  "note_match": {
+    "contains": "【ホラー短編】",
+    "title_regex": "^【ホラー短編】(?P<subtitle>.+)$"
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "status": "連載中",
+  "r18": false,
+  "indent": true,
+  "platforms": [
+    "kakuyomu",
+    "narou",
+    "estar"
+  ],
+  "auto_post": [],
+  "links": {
+    "note_magazine": "https://note.com/swi0801/m/me98fd692c5c2",
+    "kakuyomu": "",
+    "narou": "",
+    "estar": ""
+  },
+  "post_urls": {
+    "kakuyomu": "",
+    "narou": "",
+    "estar": ""
+  },
+  "title": "満員電車の魔女：偽りの獲物、真の捕食者",
+  "genre_label": "連載",
+  "catch": "",
+  "episode_unit": "{n}章",
+  "tags": [
+    "小説",
+    "連載小説"
+  ],
+  "tags_en": [
+    "webnovel"
+  ],
+  "note_match": {
+    "contains": "満員電車の魔女",
+    "title_regex": "第?(?P<num>[一二三四五六七八九十〇0-9０-９]+)章"
+  }
+}

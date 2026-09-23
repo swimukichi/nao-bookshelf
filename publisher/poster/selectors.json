@@ -2,72 +2,213 @@
   "_comment": "各サイトの入力欄・ボタンの探し方。上から順に試し、最初に見つかったものを使う。サイトの画面が変わったらここを直す。",
   "kakuyomu": {
     "new_episode_url": "https://kakuyomu.jp/my/works/{work_id}/episodes/new",
-    "title": ["input[name='title']", "input[placeholder*='タイトル']", "#episodeTitle"],
-    "body": ["textarea[name='body']", "textarea[placeholder*='本文']", "textarea"],
-    "reserve_toggle": ["label:has-text('予約公開')", "text=予約公開", "input[value='reserved']"],
-    "datetime_local": ["input[type='datetime-local']"],
-    "date": ["input[type='date']", "input[name*='date']"],
-    "time": ["input[type='time']", "input[name*='time']"],
+    "title": [
+      "input[name='title']",
+      "input[placeholder*='タイトル']",
+      "#episodeTitle"
+    ],
+    "body": [
+      "textarea[name='body']",
+      "textarea[placeholder*='本文']",
+      "textarea"
+    ],
+    "reserve_toggle": [
+      "label:has-text('予約公開')",
+      "text=予約公開",
+      "input[value='reserved']"
+    ],
+    "datetime_local": [
+      "input[type='datetime-local']"
+    ],
+    "date": [
+      "input[type='date']",
+      "input[name*='date']"
+    ],
+    "time": [
+      "input[type='time']",
+      "input[name*='time']"
+    ],
     "selects": {
-      "year": ["select[name*='year']"],
-      "month": ["select[name*='month']"],
-      "day": ["select[name*='day']"],
-      "hour": ["select[name*='hour']"],
-      "minute": ["select[name*='minute']", "select[name*='min']"]
+      "year": [
+        "select[name*='year']"
+      ],
+      "month": [
+        "select[name*='month']"
+      ],
+      "day": [
+        "select[name*='day']"
+      ],
+      "hour": [
+        "select[name*='hour']"
+      ],
+      "minute": [
+        "select[name*='minute']",
+        "select[name*='min']"
+      ]
     },
-    "submit": ["button:has-text('予約公開する')", "button:has-text('予約')", "button:has-text('公開する')", "input[type='submit']"],
-    "confirm": ["button:has-text('OK')", "button:has-text('予約公開する')", "button:has-text('はい')"],
-    "success_text": ["予約", "公開予定", "保存しました"]
+    "submit": [
+      "button:has-text('予約公開する')",
+      "button:has-text('予約')",
+      "button:has-text('公開する')",
+      "input[type='submit']"
+    ],
+    "confirm": [
+      "button:has-text('OK')",
+      "button:has-text('予約公開する')",
+      "button:has-text('はい')"
+    ],
+    "success_text": [
+      "予約",
+      "公開予定",
+      "保存しました",
+      "公開しました",
+      "公開中"
+    ],
+    "submit_now": [
+      "button:has-text('公開する')",
+      "button:has-text('今すぐ公開')",
+      "input[type='submit']"
+    ]
   },
   "narou": {
-    "title": ["input[name='subtitle']", "input[name='title']", "input[placeholder*='タイトル']"],
-    "body": ["textarea[name='novel']", "textarea[name='honbun']", "textarea[name='body']", "textarea"],
-    "reserve_toggle": ["label:has-text('予約掲載')", "text=予約掲載", "input[value='reserve']"],
-    "datetime_local": ["input[type='datetime-local']"],
-    "date": ["input[type='date']", "input[name*='date']"],
-    "time": ["input[type='time']", "input[name*='time']"],
+    "title": [
+      "input[name='subtitle']",
+      "input[name='title']",
+      "input[placeholder*='タイトル']"
+    ],
+    "body": [
+      "textarea[name='novel']",
+      "textarea[name='honbun']",
+      "textarea[name='body']",
+      "textarea"
+    ],
+    "reserve_toggle": [
+      "label:has-text('予約掲載')",
+      "text=予約掲載",
+      "input[value='reserve']"
+    ],
+    "datetime_local": [
+      "input[type='datetime-local']"
+    ],
+    "date": [
+      "input[type='date']",
+      "input[name*='date']"
+    ],
+    "time": [
+      "input[type='time']",
+      "input[name*='time']"
+    ],
     "selects": {
-      "year": ["select[name*='year']", "select[name*='yyyy']"],
-      "month": ["select[name*='month']", "select[name*='mm']"],
-      "day": ["select[name*='day']", "select[name*='dd']"],
-      "hour": ["select[name*='hour']", "select[name*='hh']"],
-      "minute": ["select[name*='minute']", "select[name*='min']"]
+      "year": [
+        "select[name*='year']",
+        "select[name*='yyyy']"
+      ],
+      "month": [
+        "select[name*='month']",
+        "select[name*='mm']"
+      ],
+      "day": [
+        "select[name*='day']",
+        "select[name*='dd']"
+      ],
+      "hour": [
+        "select[name*='hour']",
+        "select[name*='hh']"
+      ],
+      "minute": [
+        "select[name*='minute']",
+        "select[name*='min']"
+      ]
     },
-    "submit": ["button:has-text('予約掲載')", "input[value*='予約']", "button:has-text('確認')", "input[value*='確認']", "input[type='submit']"],
-    "confirm": ["button:has-text('予約掲載')", "input[value*='予約']", "button:has-text('投稿')", "input[value*='投稿']"],
-    "success_text": ["予約", "完了"]
+    "submit": [
+      "button:has-text('予約掲載')",
+      "input[value*='予約']",
+      "button:has-text('確認')",
+      "input[value*='確認']",
+      "input[type='submit']"
+    ],
+    "confirm": [
+      "button:has-text('予約掲載')",
+      "input[value*='予約']",
+      "button:has-text('投稿')",
+      "input[value*='投稿']"
+    ],
+    "success_text": [
+      "予約",
+      "完了",
+      "投稿しました",
+      "掲載"
+    ],
+    "submit_now": [
+      "button:has-text('投稿')",
+      "input[value*='投稿']",
+      "button:has-text('確認')",
+      "input[value*='確認']",
+      "input[type='submit']"
+    ]
   },
   "estar": {
-    "title": ["input[name='title']", "input[placeholder*='タイトル']"],
-    "body": ["textarea[name='body']", "textarea[name='content']", "textarea"],
-    "reserve_toggle": ["label:has-text('予約公開')", "text=予約公開", "label:has-text('予約')"],
-    "datetime_local": ["input[type='datetime-local']"],
-    "date": ["input[type='date']"],
-    "time": ["input[type='time']"],
+    "title": [
+      "input[name='title']",
+      "input[placeholder*='タイトル']"
+    ],
+    "body": [
+      "textarea[name='body']",
+      "textarea[name='content']",
+      "textarea"
+    ],
+    "reserve_toggle": [
+      "label:has-text('予約公開')",
+      "text=予約公開",
+      "label:has-text('予約')"
+    ],
+    "datetime_local": [
+      "input[type='datetime-local']"
+    ],
+    "date": [
+      "input[type='date']"
+    ],
+    "time": [
+      "input[type='time']"
+    ],
     "selects": {
-      "year": ["select[name*='year']"],
-      "month": ["select[name*='month']"],
-      "day": ["select[name*='day']"],
-      "hour": ["select[name*='hour']"],
-      "minute": ["select[name*='minute']", "select[name*='min']"]
+      "year": [
+        "select[name*='year']"
+      ],
+      "month": [
+        "select[name*='month']"
+      ],
+      "day": [
+        "select[name*='day']"
+      ],
+      "hour": [
+        "select[name*='hour']"
+      ],
+      "minute": [
+        "select[name*='minute']",
+        "select[name*='min']"
+      ]
     },
-    "submit": ["button:has-text('予約')", "button:has-text('保存')", "button:has-text('公開')", "input[type='submit']"],
-    "confirm": ["button:has-text('OK')", "button:has-text('はい')", "button:has-text('予約')"],
-    "success_text": ["予約", "保存しました", "公開"]
-  },
-  "note": {
-    "new_url": "https://note.com/notes/new",
-    "title": ["textarea[placeholder*='タイトル']", "input[placeholder*='タイトル']"],
-    "body": [".ProseMirror", "div[contenteditable='true']"],
-    "open_publish": ["button:has-text('公開に進む')", "button:has-text('公開設定')"],
-    "hashtag_input": ["input[placeholder*='ハッシュタグ']"],
-    "reserve_toggle": ["label:has-text('予約投稿')", "text=予約投稿", "button:has-text('日時を設定')"],
-    "datetime_local": ["input[type='datetime-local']"],
-    "date": ["input[type='date']"],
-    "time": ["input[type='time']"],
-    "selects": {},
-    "submit": ["button:has-text('予約投稿する')", "button:has-text('予約する')", "button:has-text('投稿する')"],
-    "confirm": ["button:has-text('予約投稿する')", "button:has-text('OK')"],
-    "success_text": ["予約", "公開予定"]
+    "submit": [
+      "button:has-text('予約')",
+      "button:has-text('保存')",
+      "button:has-text('公開')",
+      "input[type='submit']"
+    ],
+    "confirm": [
+      "button:has-text('OK')",
+      "button:has-text('はい')",
+      "button:has-text('予約')"
+    ],
+    "success_text": [
+      "予約",
+      "保存しました",
+      "公開"
+    ],
+    "submit_now": [
+      "button:has-text('公開')",
+      "button:has-text('保存')",
+      "input[type='submit']"
+    ]
   }
 }
