@@ -9,13 +9,31 @@
   "status": "連載中",
   "r18": false,
   "indent": true,
-  "tags": ["ホラー", "短編小説"],
-  "tags_en": ["horror", "shortstory"],
-  "platforms": ["note", "kakuyomu", "narou", "estar"],
+  "tags": [
+    "ホラー",
+    "短編小説"
+  ],
+  "tags_en": [
+    "horror",
+    "shortstory"
+  ],
+  "platforms": [
+    "note",
+    "kakuyomu",
+    "narou",
+    "estar"
+  ],
   "links": {
     "note_magazine": "https://note.com/swi0801/m/me98fd692c5c2",
     "kakuyomu": "",
     "narou": "",
     "estar": ""
+  },
+  "auto_post": [],
+  "post_urls": {
+    "kakuyomu": "",
+    "narou": "",
+    "estar": "",
+    "note": ""
   }
 }
