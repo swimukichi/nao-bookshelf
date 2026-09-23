@@ -1,0 +1,21 @@
+{
+  "title": "見本作品",
+  "title_prefix": "【ホラー短編】",
+  "genre_label": "短編ホラー",
+  "catch": "これは書き方の見本です。コピーして自分の作品に書き換えてください。",
+  "summary": "引っ越し先の部屋には、前の住人の表札が残っていた。外そうとするたび、文字が一つずつ増えていく。",
+  "episode_unit": "第{n}話",
+  "total_episodes": 2,
+  "status": "連載中",
+  "r18": false,
+  "indent": true,
+  "tags": ["ホラー", "短編小説"],
+  "tags_en": ["horror", "shortstory"],
+  "platforms": ["note", "kakuyomu", "narou", "estar"],
+  "links": {
+    "note_magazine": "https://note.com/swi0801/m/me98fd692c5c2",
+    "kakuyomu": "",
+    "narou": "",
+    "estar": ""
+  }
+}
