@@ -4,7 +4,7 @@
 使い方:
   pip install playwright
   python -m playwright install chromium
-  python scripts/save_login.py kakuyomu      # narou / estar も同じ
+  python scripts/save_login.py kakuyomu      # narou / estar / note も同じ
 
 ブラウザが開くので普段どおりログインし、ターミナルに戻って Enter を押す。
 表示された文字列を GitHub の Settings → Secrets and variables → Actions に
@@ -19,6 +19,7 @@ LOGIN_URLS = {
     "kakuyomu": "https://kakuyomu.jp/login",
     "narou": "https://syosetu.com/login/input/",
     "estar": "https://estar.jp/login",
+    "note": "https://note.com/login",
 }
 
 

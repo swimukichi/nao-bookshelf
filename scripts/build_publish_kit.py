@@ -106,18 +106,19 @@ def convert_markup(text: str, platform: str) -> str:
 def format_body(body: str, platform: str, indent: bool) -> str:
     lines_out = []
     for line in body.split("\n"):
-        stripped = line.strip()
-        image = IMAGE_MARK.match(stripped)
+        # 全角スペース(作者の字下げ)は残す
+        stripped = line.strip(" \t\r")
+        image = IMAGE_MARK.match(stripped.strip())
         if image:
             if platform == "note":
                 lines_out.append(f"【画像挿入：{image.group(1)}】")
             continue
-        if SCENE_BREAK.match(stripped):
+        if SCENE_BREAK.match(stripped.strip()):
             lines_out.append("")
             lines_out.append("───" if platform == "note" else "◇　◇　◇")
             lines_out.append("")
             continue
-        if not stripped:
+        if not stripped.strip():
             lines_out.append("")
             continue
         converted = convert_markup(stripped, platform)
@@ -155,12 +156,27 @@ def episode_label(work: dict, ep: dict) -> str:
     unit = work.get("episode_unit", "第{n}話")
     label = unit.replace("{n}", str(num)).replace("{kanji}", to_kanji(num))
     title = ep["meta"].get("title")
+    if not label:
+        return title
     return f"{label}　{title}" if title else label
 
 
 def full_title(work: dict, ep: dict) -> str:
     prefix = work.get("title_prefix", "")
     return f"{prefix}{work['title']}　{episode_label(work, ep)}"
+
+
+def note_title(work: dict, ep: dict) -> str:
+    """note に投稿するときの記事タイトル。
+
+    work.json の note_title_format で変えられる(例: 短編集なら "【ホラー短編】{ep_title}")。
+    使える差し込み: {prefix} {title} {label} {ep_title}
+    """
+    fmt = work.get("note_title_format")
+    if not fmt:
+        return full_title(work, ep)
+    return fmt.format(prefix=work.get("title_prefix", ""), title=work["title"],
+                      label=episode_label(work, ep), ep_title=ep["meta"].get("title", ""))
 
 
 def find_note_url(work: dict, ep: dict, latest: list) -> str:
@@ -209,18 +225,23 @@ def fit_x(parts: list, limit: int = 280) -> str:
 def build_note(work, ep, config, next_ep) -> str:
     cfg = config.get("note", {})
     magazine = work.get("links", {}).get("note_magazine") or cfg.get("magazine_url", "")
-    header = [
-        "━━━",
-        f"{work.get('genre_label', work.get('genre', ''))}『{work['title']}』"
-        + (f"全{work['total_episodes']}話" if work.get("total_episodes") else ""),
-        work.get("catch", ""),
-        "━━━",
-        "",
-        episode_label(work, ep),
-        "",
-    ]
-    footer = ["", "───", ""]
-    if next_ep:
+    if work.get("note_header") is False:
+        header = []
+    else:
+        header = [
+            "━━━",
+            f"{work.get('genre_label', work.get('genre', ''))}『{work['title']}』"
+            + (f"全{work['total_episodes']}話" if work.get("total_episodes") else ""),
+            work.get("catch", ""),
+            "━━━",
+            "",
+            episode_label(work, ep),
+            "",
+        ]
+    footer = ["", "───", ""] if header else ["", ""]
+    if work.get("anthology"):
+        footer.append("（了）")
+    elif next_ep:
         footer.append(f"次回：{episode_label(work, next_ep)}"
                       + (f"（{next_ep['meta']['publish_at']} 公開予定）" if next_ep["meta"].get("publish_at") else ""))
     else:
@@ -229,7 +250,7 @@ def build_note(work, ep, config, next_ep) -> str:
         footer += ["", f"マガジンはこちら", magazine]
     if cfg.get("cta"):
         footer += ["", cfg["cta"]]
-    return "\n".join(header) + "\n" + format_body(ep["body"], "note", indent=False) + "\n".join(footer) + "\n"
+    return ("\n".join(header) + "\n" if header else "") + format_body(ep["body"], "note", indent=False) + "\n".join(footer) + "\n"
 
 
 def build_novel_site(work, ep, platform) -> str:
@@ -245,6 +266,10 @@ def build_sns(work, ep, config, note_url, r18) -> str:
     url = note_url or "{{noteのURLを貼る}}"
     is_last = str(ep["meta"]["episode"]) == str(work.get("total_episodes", ""))
     kind = "【完結】" if is_last else ("【連載開始】" if str(ep["meta"]["episode"]) == "1" else "【更新】")
+    head = f"『{work['title']}』{label}"
+    if work.get("anthology"):
+        # 短編集は1話ずつ独立しているので、記事タイトルをそのまま使う
+        kind, head = "", note_title(work, ep)
 
     out = [f"# SNS告知文 — {full_title(work, ep)}", ""]
     if r18:
@@ -258,26 +283,26 @@ def build_sns(work, ep, config, note_url, r18) -> str:
                 "> (6時間ごとのフィード更新で公開が検知されると、自動で埋まります)", ""]
 
     # X
-    x_simple = fit_x([f"{kind}『{work['title']}』{label}", hook, url, hashtags(tags_ja, 3)])
-    x_rich = fit_x([hook, "", f"『{work['title']}』{label}", url, hashtags(tags_ja[:2] + tags_en[:1])])
+    x_simple = fit_x([f"{kind}{head}", hook, url, hashtags(tags_ja, 3)])
+    x_rich = fit_x([hook, "", f"{head}", url, hashtags(tags_ja[:2] + tags_en[:1])])
     out += ["## X", "", "### すぐ使う版", "```", x_simple, "```",
             f"({x_weight(x_simple)}/280)", "", "### 少し凝った版(フック先出し)", "```", x_rich, "```",
             f"({x_weight(x_rich)}/280)", ""]
 
     # Threads
     summary = work.get("summary", "")
-    threads_simple = "\n".join([f"{kind}『{work['title']}』{label}", "", hook, "", url, "", hashtags(tags_ja, 1)])
-    threads_rich = "\n".join([hook, "", summary, "", f"▶ 『{work['title']}』{label}", url, "",
+    threads_simple = "\n".join([f"{kind}{head}", "", hook, "", url, "", hashtags(tags_ja, 1)])
+    threads_rich = "\n".join([hook, "", summary, "", f"▶ {head}", url, "",
                               "感想をもらえると次の話の燃料になります。", hashtags(tags_ja, 1)])
     out += ["## Threads", "", "### すぐ使う版", "```", threads_simple, "```", "",
             "### 少し凝った版", "```", threads_rich, "```", ""]
 
     # Instagram
     ig_tags = hashtags(tags_ja + tags_en, 20)
-    ig_simple = "\n".join([f"{kind}『{work['title']}』{label}", "", hook, "",
+    ig_simple = "\n".join([f"{kind}{head}", "", hook, "",
                            "▶ 続きはプロフィールのリンクから", "", ig_tags])
     ig_rich = "\n".join([hook, "", "・", "・", "・", "", summary, "",
-                         f"📖『{work['title']}』{label}",
+                         f"📖{head}",
                          "▶ プロフィールのリンク(note)から読めます",
                          "保存しておくと、続きを見逃しません。", "", ".", ig_tags])
     out += ["## Instagram", "", "### すぐ使う版", "```", ig_simple, "```", "",
@@ -285,7 +310,7 @@ def build_sns(work, ep, config, note_url, r18) -> str:
 
     # TikTok
     tt_tags = hashtags(tags_ja[:3] + tags_en[:2] + sns.get("tiktok_tags", []), 6)
-    tt_simple = "\n".join([f"{hook}", f"『{work['title']}』{label}はプロフィールから", tt_tags])
+    tt_simple = "\n".join([f"{hook}", f"{head}はプロフィールから", tt_tags])
     tt_rich = "\n".join([f"{hook}", "最後の一行まで読んでほしい。", f"続き→プロフィールのリンク『{work['title']}』", tt_tags])
     out += ["## TikTok", "", "### すぐ使う版", "```", tt_simple, "```", "",
             "### 少し凝った版", "```", tt_rich, "```", ""]

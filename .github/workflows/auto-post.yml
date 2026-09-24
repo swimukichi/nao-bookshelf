@@ -1,7 +1,8 @@
-name: Repost note episodes to other sites
+name: Post novels
 
-# note に公開された話を取り込み、カクヨム・なろう・エブリスタへ投稿/予約する。
-# note への投稿は PC 側の仕組みが担当するため、ここでは note に書き込まない。
+# ① note に公開された話を取り込み、カクヨム・なろう・エブリスタへ投稿/予約する。
+#    (note への投稿は PC 側の仕組みが担当)
+# ② このリポジトリで書いた原稿は、note を含めて各サイトへ予約投稿する。
 
 on:
   schedule:
@@ -18,7 +19,7 @@ on:
         options: [probe, dry-run, post]
         default: probe
       platform:
-        description: "kakuyomu / narou / estar(空なら全部)"
+        description: "note / kakuyomu / narou / estar(空なら全部)"
         required: false
         default: ""
       target:
@@ -68,6 +69,7 @@ jobs:
       - name: Post / schedule to other sites
         if: steps.check.outputs.jobs != '0'
         env:
+          NOTE_STORAGE_STATE: ${{ secrets.NOTE_STORAGE_STATE }}
           KAKUYOMU_STORAGE_STATE: ${{ secrets.KAKUYOMU_STORAGE_STATE }}
           NAROU_STORAGE_STATE: ${{ secrets.NAROU_STORAGE_STATE }}
           ESTAR_STORAGE_STATE: ${{ secrets.ESTAR_STORAGE_STATE }}

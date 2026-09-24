@@ -3,6 +3,7 @@
   "r18": false,
   "indent": true,
   "platforms": [
+    "note",
     "estar"
   ],
   "auto_post": [],
@@ -11,16 +12,18 @@
     "estar": "https://estar.jp/novels/26606274"
   },
   "post_urls": {
+    "note": "",
     "estar": ""
   },
   "title": "わたしは正しかった",
   "title_prefix": "",
   "genre_label": "短編ホラー集",
   "catch": "正しい手順を踏んだ。前提だけが違っていた。",
-  "episode_unit": "第{n}話",
+  "episode_unit": "",
   "tags": [
     "ホラー",
-    "短編小説"
+    "短編小説",
+    "ホラー短編"
   ],
   "tags_en": [
     "horror",
@@ -28,6 +31,10 @@
   ],
   "note_match": {
     "contains": "【ホラー短編】",
-    "title_regex": "^【ホラー短編】(?P<subtitle>.+)$"
-  }
+    "title_regex": "^【ホラー短編】(?P<subtitle>.+)$",
+    "since": "2026-09-24"
+  },
+  "note_title_format": "【ホラー短編】{ep_title}",
+  "note_header": false,
+  "anthology": true
 }

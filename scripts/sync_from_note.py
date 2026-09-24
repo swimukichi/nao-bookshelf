@@ -192,6 +192,17 @@ def main() -> int:
     notes.sort(key=lambda n: n.get("publishAt") or "")
     print(f"[sync_from_note] note の公開記事 {len(notes)} 件")
 
+    # このリポジトリで書いて note に投稿した話は、取り込まない(二重投稿防止)
+    local_titles = set()
+    for work_dir in kit.WORKS_DIR.iterdir():
+        w = kit.load_json(work_dir / "work.json") if work_dir.is_dir() else None
+        if not w:
+            continue
+        for path in (work_dir / "episodes").glob("*.md"):
+            ep = kit.parse_episode(path)
+            if not ep["meta"].get("note_key"):
+                local_titles.add(kit.note_title(w, ep))
+
     added = 0
     for work_dir, work in works:
         match = work["note_match"]
@@ -204,7 +215,7 @@ def main() -> int:
         for item in notes:
             title = item.get("name", "")
             found = match_episode(title, match)
-            if not found or item.get("key") in known:
+            if not found or item.get("key") in known or title in local_titles:
                 continue
             published = to_jst(item["publishAt"]) if item.get("publishAt") else None
             if since and published and published.strftime("%Y-%m-%d") < since:
