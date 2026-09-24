@@ -145,6 +145,8 @@ def collect_jobs(config: dict, selectors: dict, state: dict, only_platform: str,
                     reason = f"まだ先({window}日以内になったら予約)"
                 elif not post_url(platform, work, selectors):
                     reason = "work.json の post_urls に投稿画面のURLがない"
+                elif not os.environ.get(SECRET_NAMES[platform]) and not os.environ.get("AUTO_POST_IGNORE_SECRETS"):
+                    reason = f"ログイン状態(Secret {SECRET_NAMES[platform]})が未登録"
                 if reason:
                     skipped.append((key, platform, reason))
                     continue

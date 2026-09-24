@@ -6,7 +6,10 @@
     "note",
     "estar"
   ],
-  "auto_post": [],
+  "auto_post": [
+    "note",
+    "estar"
+  ],
   "links": {
     "note_magazine": "https://note.com/swi0801/m/me98fd692c5c2",
     "estar": "https://estar.jp/novels/26606274"

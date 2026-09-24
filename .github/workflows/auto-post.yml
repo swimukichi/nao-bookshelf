@@ -54,6 +54,11 @@ jobs:
 
       - name: Check for episodes to post
         id: check
+        env:
+          NOTE_STORAGE_STATE: ${{ secrets.NOTE_STORAGE_STATE }}
+          KAKUYOMU_STORAGE_STATE: ${{ secrets.KAKUYOMU_STORAGE_STATE }}
+          NAROU_STORAGE_STATE: ${{ secrets.NAROU_STORAGE_STATE }}
+          ESTAR_STORAGE_STATE: ${{ secrets.ESTAR_STORAGE_STATE }}
         run: |
           python3 scripts/auto_post.py --check \
             --mode "${{ github.event.inputs.mode || 'post' }}" \
