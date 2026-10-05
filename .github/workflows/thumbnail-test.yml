@@ -1,0 +1,39 @@
+name: Thumbnail test (Higgsfield)
+
+# PR を取り込む前に、Higgsfield でサムネが作れるかを確かめるための実行。
+# 作った画像はコミットせず、実行結果の Artifacts に置く。
+on:
+  push:
+    branches: ["claude/**"]
+    paths:
+      - "publisher/works/**/*.visual.md"
+      - "scripts/generate_thumbnails.py"
+      - ".github/workflows/thumbnail-test.yml"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Generate thumbnails
+        env:
+          HF_KEY: ${{ secrets.HF_KEY }}
+        run: |
+          if [ -z "$HF_KEY" ]; then
+            echo "::warning::Secret HF_KEY が未登録です。cloud.higgsfield.ai の API キーを登録してください。"
+            exit 0
+          fi
+          pip install -q higgsfield-client
+          python3 scripts/generate_thumbnails.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: thumbnails
+          path: publisher/works/*/images/
+          if-no-files-found: ignore
