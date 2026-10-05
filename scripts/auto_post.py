@@ -124,7 +124,7 @@ def collect_jobs(config: dict, selectors: dict, state: dict, only_platform: str,
             # 調査・入力テストは、まだ自動予約を有効にしていない作品でも行えるようにする
             targets = work.get("platforms", [])
         targets = [p for p in targets if p in PLATFORMS]
-        for ep_path in sorted((work_dir / "episodes").glob("*.md")):
+        for ep_path in kit.episode_files(work_dir):
             ep = kit.parse_episode(ep_path)
             key = f"{work_dir.name}/{ep_path.stem}"
             if only_target and only_target != key and only_target != work_dir.name:

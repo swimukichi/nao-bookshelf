@@ -56,6 +56,11 @@ def load_json(path: Path, default=None):
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def episode_files(work_dir: Path):
+    """原稿ファイル(NN.md)の一覧。NN.visual.md などの付属ファイルは除く。"""
+    return sorted(p for p in (work_dir / "episodes").glob("*.md") if "." not in p.stem)
+
+
 def parse_episode(path: Path) -> dict:
     """先頭の --- で囲まれた key: value を読み、残りを本文とする。"""
     text = path.read_text(encoding="utf-8").replace("\r\n", "\n")
@@ -332,6 +337,9 @@ def build_checklist(work, ep, platforms, counts, warnings, note_url) -> str:
             line += f"(作品ページ：{link})"
         out.append(line)
     out += ["", "- タイトル欄にはこれをコピー：", "```", full_title(work, ep), "```", ""]
+    out += ["- [ ] アメブロ：`ameblo.txt` の中身を貼り付け(予約は手動)", ""]
+    out += ["## サムネ・イラスト(Higgsfield)", "",
+            "- [ ] `higgsfield.md` のプロンプトで生成し、note の見出し画像・各SNSに使う", ""]
     out += ["## 告知", "", "- [ ] X", "- [ ] Threads", "- [ ] Instagram", "- [ ] TikTok",
             "", "(文面は `sns.md`)", ""]
     out += ["## 公開後", "",
@@ -349,7 +357,7 @@ def build_work(work_dir: Path, config: dict, latest: list):
         print(f"[publish_kit] skip {work_dir.name}: work.json がありません", file=sys.stderr)
         return []
     episodes = sorted(
-        (parse_episode(p) for p in (work_dir / "episodes").glob("*.md")),
+        (parse_episode(p) for p in episode_files(work_dir)),
         key=lambda e: (int(e["meta"]["episode"]) if str(e["meta"]["episode"]).isdigit() else 0, e["file"]),
     )
     platforms = [p for p in work.get("platforms", ["note"]) if p in PLATFORM_LABELS]
@@ -375,6 +383,16 @@ def build_work(work_dir: Path, config: dict, latest: list):
                 (out_dir / "note.md").write_text(content, encoding="utf-8")
             else:
                 (out_dir / f"{p}.txt").write_text(build_novel_site(work, ep, p), encoding="utf-8")
+
+        # アメブロ用(自動投稿の対象外。手で貼る/予約する)
+        (out_dir / "ameblo.txt").write_text(
+            re.sub(r"\*\*(.+?)\*\*", r"\1", build_note(work, ep, config, next_ep)), encoding="utf-8")
+        # Higgsfield 用のサムネ・イラスト・動画プロンプト
+        visual = work_dir / "episodes" / f"{Path(ep['file']).stem}.visual.md"
+        if visual.exists():
+            shutil.copyfile(visual, out_dir / "higgsfield.md")
+        else:
+            warnings.append(f"サムネ用のプロンプト(episodes/{visual.name})がありません。")
 
         note_url = find_note_url(work, ep, latest)
         (out_dir / "sns.md").write_text(build_sns(work, ep, config, note_url, r18), encoding="utf-8")

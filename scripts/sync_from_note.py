@@ -161,7 +161,7 @@ def match_episode(title: str, match: dict):
 
 def existing_keys(ep_dir: Path) -> dict:
     keys = {}
-    for path in ep_dir.glob("*.md"):
+    for path in kit.episode_files(ep_dir.parent):
         ep = kit.parse_episode(path)
         if ep["meta"].get("note_key"):
             keys[ep["meta"]["note_key"]] = path
@@ -198,7 +198,7 @@ def main() -> int:
         w = kit.load_json(work_dir / "work.json") if work_dir.is_dir() else None
         if not w:
             continue
-        for path in (work_dir / "episodes").glob("*.md"):
+        for path in kit.episode_files(work_dir):
             ep = kit.parse_episode(path)
             if not ep["meta"].get("note_key"):
                 local_titles.add(kit.note_title(w, ep))
