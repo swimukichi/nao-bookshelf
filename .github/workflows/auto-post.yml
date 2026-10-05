@@ -2,7 +2,7 @@ name: Post novels
 
 # ① note に公開された話を取り込み、カクヨム・なろう・エブリスタへ投稿/予約する。
 #    (note への投稿は PC 側の仕組みが担当)
-# ② このリポジトリで書いた原稿は、note を含めて各サイトへ予約投稿する。
+# ② このリポジトリで書いた原稿は、Higgsfield でサムネを作り、note を含めて各サイトへ予約投稿する。
 
 on:
   schedule:
@@ -49,12 +49,21 @@ jobs:
       - name: Import published episodes from note
         run: python3 scripts/sync_from_note.py
 
+      - name: Generate thumbnails with Higgsfield
+        continue-on-error: true
+        env:
+          HF_KEY: ${{ secrets.HF_KEY }}
+        run: |
+          if [ -n "$HF_KEY" ]; then pip install -q higgsfield-client; fi
+          python3 scripts/generate_thumbnails.py
+
       - name: Build publish kit
         run: python3 scripts/build_publish_kit.py
 
       - name: Check for episodes to post
         id: check
         env:
+          HF_KEY: ${{ secrets.HF_KEY }}
           NOTE_STORAGE_STATE: ${{ secrets.NOTE_STORAGE_STATE }}
           KAKUYOMU_STORAGE_STATE: ${{ secrets.KAKUYOMU_STORAGE_STATE }}
           NAROU_STORAGE_STATE: ${{ secrets.NAROU_STORAGE_STATE }}
@@ -74,6 +83,7 @@ jobs:
       - name: Post / schedule to other sites
         if: steps.check.outputs.jobs != '0'
         env:
+          HF_KEY: ${{ secrets.HF_KEY }}
           NOTE_STORAGE_STATE: ${{ secrets.NOTE_STORAGE_STATE }}
           KAKUYOMU_STORAGE_STATE: ${{ secrets.KAKUYOMU_STORAGE_STATE }}
           NAROU_STORAGE_STATE: ${{ secrets.NAROU_STORAGE_STATE }}

@@ -135,6 +135,11 @@ def collect_jobs(config: dict, selectors: dict, state: dict, only_platform: str,
                     continue
                 if platform == "note" and ep["meta"].get("note_key"):
                     continue  # note から取り込んだ話は note に投稿済み
+                if (platform == "note" and os.environ.get("HF_KEY")
+                        and (work_dir / "episodes" / f"{ep_path.stem}.visual.md").exists()
+                        and not list((work_dir / "images").glob(f"{ep_path.stem}-note.*"))):
+                    skipped.append((key, platform, "サムネ(Higgsfield)の生成待ち"))
+                    continue
                 if (mode == "post" and not ep["meta"].get("note_key")
                         and ep["meta"].get("approved", "").lower() != "true"):
                     # ここで書いた話は、公開日時と本文を確認して approved: true にするまで予約しない
@@ -322,6 +327,30 @@ def run_form_site(page, job, sel, mode, title, body):
     return "scheduled", page.url.split("?")[0]
 
 
+def header_image(job):
+    """Higgsfield で作った note 用の見出し画像(なければ None)。"""
+    stem = job["key"].split("/")[1]
+    work_dir = kit.WORKS_DIR / job["key"].split("/")[0]
+    return next(iter(sorted((work_dir / "images").glob(f"{stem}-note.*"))), None)
+
+
+def set_header_image(page, sel, path):
+    """note の見出し画像を設定する。"""
+    button = first(page, sel.get("header_image_button"), timeout=3000, required=False)
+    if button:
+        with page.expect_file_chooser(timeout=8000) as chooser:
+            button.click()
+        chooser.value.set_files(str(path))
+    else:
+        page.locator("input[type='file']").first.set_input_files(str(path))
+    page.wait_for_timeout(2000)
+    confirm = first(page, sel.get("header_image_confirm"), timeout=4000, required=False)
+    if confirm:
+        confirm.click()
+        page.wait_for_timeout(2000)
+    print(f"  見出し画像: {path.name}")
+
+
 def run_note(page, job, sel, mode, title, body, tags):
     page.goto(job["url"], wait_until="domcontentloaded")
     ensure_logged_in(page)
@@ -337,6 +366,9 @@ def run_note(page, job, sel, mode, title, body, tags):
             shot(page, f"probe_note_settings_{job['key']}")
         return "probed", page.url
 
+    image = header_image(job)
+    if image:
+        set_header_image(page, sel, image)
     first(page, sel["title"]).fill(title)
     paste_html(page, first(page, sel["body"]), note_html(body), body)
     page.wait_for_timeout(1500)

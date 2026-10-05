@@ -236,7 +236,8 @@ def build_note(work, ep, config, next_ep) -> str:
         header = [
             "━━━",
             f"{work.get('genre_label', work.get('genre', ''))}『{work['title']}』"
-            + (f"全{work['total_episodes']}話" if work.get("total_episodes") else ""),
+            + (f"全{work['total_episodes']}{'章' if '章' in work.get('episode_unit', '') else '話'}"
+               if work.get("total_episodes") else ""),
             work.get("catch", ""),
             "━━━",
             "",
@@ -339,7 +340,8 @@ def build_checklist(work, ep, platforms, counts, warnings, note_url) -> str:
     out += ["", "- タイトル欄にはこれをコピー：", "```", full_title(work, ep), "```", ""]
     out += ["- [ ] アメブロ：`ameblo.txt` の中身を貼り付け(予約は手動)", ""]
     out += ["## サムネ・イラスト(Higgsfield)", "",
-            "- [ ] `higgsfield.md` のプロンプトで生成し、note の見出し画像・各SNSに使う", ""]
+            "- `thumbnail-note.*` があれば生成済み(note には見出し画像として自動で貼られる)",
+            "- [ ] Instagram・TikTok 用は `higgsfield.md` のプロンプトで生成する", ""]
     out += ["## 告知", "", "- [ ] X", "- [ ] Threads", "- [ ] Instagram", "- [ ] TikTok",
             "", "(文面は `sns.md`)", ""]
     out += ["## 公開後", "",
@@ -389,6 +391,8 @@ def build_work(work_dir: Path, config: dict, latest: list):
             re.sub(r"\*\*(.+?)\*\*", r"\1", build_note(work, ep, config, next_ep)), encoding="utf-8")
         # Higgsfield 用のサムネ・イラスト・動画プロンプト
         visual = work_dir / "episodes" / f"{Path(ep['file']).stem}.visual.md"
+        for image in sorted((work_dir / "images").glob(f"{Path(ep['file']).stem}-*")):
+            shutil.copyfile(image, out_dir / f"thumbnail-{image.name.split('-', 1)[1]}")
         if visual.exists():
             shutil.copyfile(visual, out_dir / "higgsfield.md")
         else:

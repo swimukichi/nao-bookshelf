@@ -22,7 +22,8 @@
 
 ## サムネ・イラスト(Higgsfield)
 
-- [ ] `higgsfield.md` のプロンプトで生成し、note の見出し画像・各SNSに使う
+- `thumbnail-note.*` があれば生成済み(note には見出し画像として自動で貼られる)
+- [ ] Instagram・TikTok 用は `higgsfield.md` のプロンプトで生成する
 
 ## 告知
 

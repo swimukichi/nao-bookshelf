@@ -89,6 +89,16 @@ PC側の仕組み → note に予約投稿 → 公開
 取り込んだ原稿(`publisher/works/<作品>/episodes/*.md`)は手で直しても上書きされません。
 その話の投稿前なら、直した内容で投稿されます。
 
+## サムネ(Higgsfield)の自動生成
+
+原稿と同じフォルダに `NN.visual.md`(Higgsfield 用プロンプト)を置くと、Actions が Higgsfield で note の見出し画像を作り、
+`publisher/works/<作品>/images/NN-note.png` に保存します。note に予約するときは、その画像を見出し画像として貼り付けます。
+
+- 必要な Secret：`HF_KEY`(Higgsfield Cloud の API キーとシークレットを `キー:シークレット` の形でつなげたもの)
+- `HF_KEY` を登録している間は、画像ができるまで note への予約を待ちます(サムネなしで公開しない)
+- すでに画像がある話は作り直しません。作り直すときは画像ファイルを消します
+- モデル・比率・作る画像の種類は `publisher/config.json` の `higgsfield` で変えられます(初期値：Seedream 4.0、note用 16:9 のみ)
+
 ## このリポジトリで書いた話を予約投稿する
 
 1. 作品フォルダの `episodes/` に原稿を置く(書き方は下)。Claude のセッションで「書いて予約して」と頼めば、ここまで Claude が行う

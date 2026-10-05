@@ -21,5 +21,17 @@
     "window_days": 30,
     "min_lead_minutes": 15,
     "repost_delay_hours": 0
+  },
+  "higgsfield": {
+    "model": "bytedance/seedream/v4/text-to-image",
+    "resolution": "2K",
+    "variant": "少し凝った版",
+    "kinds": [
+      {
+        "name": "note",
+        "heading": "note",
+        "aspect_ratio": "16:9"
+      }
+    ]
   }
 }

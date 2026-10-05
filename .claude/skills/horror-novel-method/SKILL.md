@@ -153,4 +153,5 @@ description: "ホラー小説のプロット・執筆・資料調査・テーマ
 - 作品の設定は `work.json`。短編は `horror-shorts`(短編集『わたしは正しかった』)。
 - 書いたら `python3 scripts/build_publish_kit.py` で各サイト用の本文・SNS告知文・チェックリストを作り、ブランチに push して PR に入れる。
 - 予約は GitHub Actions(`Post novels`)が各サイトの予約機能で行う。ログイン状態の登録はユーザーが行う。
+- サムネは `NN.visual.md` から GitHub Actions が Higgsfield API(Secret `HF_KEY`)で自動生成し、note の見出し画像として貼り付ける。画像は `publisher/works/<作品>/images/` に保存される。
 

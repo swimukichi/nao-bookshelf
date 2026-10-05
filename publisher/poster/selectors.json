@@ -50,6 +50,17 @@
     "submit_now": [
       "button:has-text('投稿する')",
       "button:has-text('公開する')"
+    ],
+    "header_image_button": [
+      "button[aria-label*='見出し画像']",
+      "button[aria-label*='画像を追加']",
+      "button:has-text('見出し画像')",
+      "button:has-text('画像を追加')"
+    ],
+    "header_image_confirm": [
+      "button:has-text('保存')",
+      "button:has-text('適用')",
+      "button:has-text('決定')"
     ]
   },
   "kakuyomu": {
