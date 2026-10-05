@@ -1,0 +1,45 @@
+{
+  "title": "公告",
+  "title_prefix": "【ホラー中編】",
+  "genre_label": "中編ホラー",
+  "total_episodes": 6,
+  "catch": "名前のない人ほど、丁寧に書く。",
+  "summary": "市役所で、身元不明の死者の公告文を書く早瀬。所持品から弔辞を書き、ひとりで火葬に立ち会う彼女に、まだ生きている男が言う。「わたしのも、書いてくれませんか」。",
+  "episode_unit": "第{kanji}章",
+  "status": "連載中",
+  "r18": false,
+  "indent": true,
+  "tags": [
+    "ホラー",
+    "ホラー小説",
+    "中編小説"
+  ],
+  "tags_en": [
+    "horror",
+    "japanesehorror"
+  ],
+  "platforms": [
+    "note",
+    "kakuyomu",
+    "narou",
+    "estar"
+  ],
+  "auto_post": [
+    "note",
+    "kakuyomu",
+    "narou",
+    "estar"
+  ],
+  "links": {
+    "note_magazine": "https://note.com/swi0801/m/me98fd692c5c2",
+    "kakuyomu": "",
+    "narou": "",
+    "estar": ""
+  },
+  "post_urls": {
+    "note": "",
+    "kakuyomu": "",
+    "narou": "",
+    "estar": ""
+  }
+}
