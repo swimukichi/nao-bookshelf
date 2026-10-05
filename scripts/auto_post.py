@@ -135,6 +135,11 @@ def collect_jobs(config: dict, selectors: dict, state: dict, only_platform: str,
                     continue
                 if platform == "note" and ep["meta"].get("note_key"):
                     continue  # note から取り込んだ話は note に投稿済み
+                if (mode == "post" and not ep["meta"].get("note_key")
+                        and ep["meta"].get("approved", "").lower() != "true"):
+                    # ここで書いた話は、公開日時と本文を確認して approved: true にするまで予約しない
+                    skipped.append((key, platform, "未承認(原稿の approved: true 待ち)"))
+                    continue
                 done = state.get(key, {}).get(platform, {})
                 if mode == "post" and done.get("status") == "scheduled":
                     continue

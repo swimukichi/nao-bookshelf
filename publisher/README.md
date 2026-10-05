@@ -93,7 +93,8 @@ PC側の仕組み → note に予約投稿 → 公開
 
 1. 作品フォルダの `episodes/` に原稿を置く(書き方は下)。Claude のセッションで「書いて予約して」と頼めば、ここまで Claude が行う
 2. work.json の `platforms` と `auto_post` に `note` を入れておく(例：短編集 `horror-shorts` は `["note", "estar"]`)
-3. main に入ると Actions が動き、`publish_at` の時刻で note と各サイトに予約する
+3. 本文と `publish_at` を確認したら、原稿の先頭に `approved: true` を書く(**これが予約ボタンの代わり**。`false` の間は予約しない)
+4. main に入ると Actions が動き、`publish_at` の時刻で note と各サイトに予約する
 
 短編集のように1話ずつ独立した作品は、work.json で次を指定します。
 
