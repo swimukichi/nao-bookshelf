@@ -2,6 +2,7 @@ name: Thumbnail test (Higgsfield)
 
 # PR を取り込む前に、Higgsfield でサムネが作れるかを確かめるための実行。
 # 作った画像はコミットせず、実行結果の Artifacts に置く。
+# HF_KEY が登録されているかの確認にも使う。
 on:
   push:
     branches: ["claude/**"]
