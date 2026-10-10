@@ -1,0 +1,37 @@
+{
+  "status": "連載中",
+  "r18": false,
+  "indent": true,
+  "platforms": [
+    "kakuyomu",
+    "narou",
+    "estar"
+  ],
+  "auto_post": [],
+  "links": {
+    "note_magazine": "https://note.com/swi0801/m/me98fd692c5c2",
+    "kakuyomu": "",
+    "narou": "",
+    "estar": ""
+  },
+  "post_urls": {
+    "kakuyomu": "",
+    "narou": "",
+    "estar": ""
+  },
+  "title": "朝まで温かいもの",
+  "genre_label": "連載",
+  "catch": "",
+  "episode_unit": "第{kanji}話",
+  "tags": [
+    "小説",
+    "連載小説"
+  ],
+  "tags_en": [
+    "webnovel"
+  ],
+  "note_match": {
+    "contains": "朝まで温かいもの",
+    "title_regex": "第(?P<num>[一二三四五六七八九十〇0-9０-９]+)話[\\s　]+(?P<subtitle>.+)$"
+  }
+}

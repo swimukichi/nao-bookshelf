@@ -1,0 +1,40 @@
+{
+  "status": "連載中",
+  "r18": false,
+  "indent": true,
+  "platforms": [
+    "kakuyomu",
+    "narou",
+    "estar"
+  ],
+  "auto_post": [],
+  "links": {
+    "note_magazine": "https://note.com/swi0801/m/me98fd692c5c2",
+    "kakuyomu": "",
+    "narou": "",
+    "estar": ""
+  },
+  "post_urls": {
+    "kakuyomu": "",
+    "narou": "",
+    "estar": ""
+  },
+  "title": "名簿",
+  "title_prefix": "【ホラー長編】",
+  "genre_label": "長編ホラー",
+  "total_episodes": 13,
+  "catch": "自治会の名簿には、空いた欄がある。わたしはそれを、埋めずにいられなかった。",
+  "episode_unit": "第{kanji}章",
+  "tags": [
+    "ホラー",
+    "長編小説"
+  ],
+  "tags_en": [
+    "horror",
+    "japanesehorror"
+  ],
+  "note_match": {
+    "contains": "名簿",
+    "title_regex": "名簿[\\s　]+第(?P<num>[一二三四五六七八九十〇0-9０-９]+)章[\\s　]+(?P<subtitle>.+)$"
+  }
+}

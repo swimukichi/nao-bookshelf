@@ -1,0 +1,37 @@
+{
+  "note": {
+    "magazine_url": "https://note.com/swi0801/m/me98fd692c5c2",
+    "cta": "スキ・フォローしてもらえると、次の話を書く力になります。",
+    "user": "swi0801"
+  },
+  "sns": {
+    "default_tags": [
+      "小説",
+      "ホラー小説"
+    ],
+    "default_tags_en": [
+      "japanesehorror",
+      "webnovel"
+    ],
+    "tiktok_tags": [
+      "booktok"
+    ]
+  },
+  "auto_post": {
+    "window_days": 30,
+    "min_lead_minutes": 15,
+    "repost_delay_hours": 0
+  },
+  "higgsfield": {
+    "model": "bytedance/seedream/v4/text-to-image",
+    "resolution": "2K",
+    "variant": "少し凝った版",
+    "kinds": [
+      {
+        "name": "note",
+        "heading": "note",
+        "aspect_ratio": "16:9"
+      }
+    ]
+  }
+}

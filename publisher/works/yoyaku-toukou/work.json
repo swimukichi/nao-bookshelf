@@ -1,0 +1,37 @@
+{
+  "status": "連載中",
+  "r18": false,
+  "indent": true,
+  "platforms": [
+    "kakuyomu",
+    "narou",
+    "estar"
+  ],
+  "auto_post": [],
+  "links": {
+    "note_magazine": "https://note.com/swi0801/m/me98fd692c5c2",
+    "kakuyomu": "",
+    "narou": "",
+    "estar": ""
+  },
+  "post_urls": {
+    "kakuyomu": "",
+    "narou": "",
+    "estar": ""
+  },
+  "title": "予約投稿は午前零時に開く",
+  "genre_label": "ホラー",
+  "catch": "",
+  "episode_unit": "第{n}話",
+  "tags": [
+    "ホラー",
+    "連載小説"
+  ],
+  "tags_en": [
+    "horror"
+  ],
+  "note_match": {
+    "contains": "予約投稿は午前零時に開く",
+    "title_regex": "第(?P<num>[一二三四五六七八九十〇0-9０-９]+)話[\\s　]*「(?P<subtitle>.+?)」"
+  }
+}
